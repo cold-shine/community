@@ -9,6 +9,8 @@ import xin.coldshine.community.dto.AccessTokenDTO;
 import xin.coldshine.community.dto.GithubUser;
 import xin.coldshine.community.provider.GithubProvider;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author cold
  */
@@ -25,7 +27,8 @@ public class AuthorizeController {
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
-                           @RequestParam(name = "state") String state) {
+                           @RequestParam(name = "state") String state,
+                           HttpServletRequest request) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
@@ -35,6 +38,13 @@ public class AuthorizeController {
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser user = githubProvider.getUser(accessToken);
         System.out.println(user.getName());
-        return "index";
+        if(user !=null){
+            //登录成功,写 cookie 和 session
+            request.getSession().setAttribute("user",user);
+            return "redirect:/";
+        }else {
+            //登录失败,重新登录
+            return "redirect:/";
+        }
     }
 }
