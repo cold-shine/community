@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import xin.coldshine.community.dto.AccessTokenDTO;
 import xin.coldshine.community.dto.GithubUser;
+import xin.coldshine.community.mapper.UserMapper;
+import xin.coldshine.community.model.User;
 import xin.coldshine.community.provider.GithubProvider;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 /**
  * @author cold
@@ -18,6 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthorizeController {
     @Autowired
     private GithubProvider githubProvider;
+
+    @Autowired
+    private UserMapper userMapper;
+
     @Value("${github.client.id}")
     private String clientId;
     @Value("${github.client.secret}")
@@ -36,13 +43,20 @@ public class AuthorizeController {
         accessTokenDTO.setRedirect_uri(clientRedirectUri);
         accessTokenDTO.setState(state);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        GithubUser user = githubProvider.getUser(accessToken);
-        System.out.println(user.getName());
-        if(user !=null){
+        GithubUser githubuser = githubProvider.getUser(accessToken);
+        System.out.println(githubuser.getName());
+        if (githubuser != null) {
             //登录成功,写 cookie 和 session
-            request.getSession().setAttribute("user",user);
+            User user = new User();
+            user.setToken(UUID.randomUUID().toString());
+            user.setName(githubuser.getName());
+            user.setAccountId(String.valueOf(githubuser.getId()));
+            user.setGmtCreater(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreater());
+            request.getSession().setAttribute("user", user);
+            userMapper.insert(user);
             return "redirect:/";
-        }else {
+        } else {
             //登录失败,重新登录
             return "redirect:/";
         }

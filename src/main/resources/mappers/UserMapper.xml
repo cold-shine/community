@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="xin.coldshine.community.mapper.UserMapper">
+
+    <resultMap id="userEntityMap" type="xin.coldshine.community.model.User">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"/>
+        <result column="account_id" property="accountId"/>
+        <result column="token" property="token"/>
+        <result column="gmt_create" property="gmtCreater"/>
+        <result column="gmt_modified" property="gmtModified"/>
+
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into USER (ACCOUNT_ID, NAME, TOKEN, GMT_CREATE, GMT_MODIFIED) values (${accountId},${name},${token},${gmtCreater},${gmtModified})
+    </insert>
+</mapper>
