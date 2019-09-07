@@ -11,7 +11,8 @@ import xin.coldshine.community.mapper.UserMapper;
 import xin.coldshine.community.model.User;
 import xin.coldshine.community.provider.GithubProvider;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
@@ -35,7 +36,7 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
-                           HttpServletRequest request) {
+                           HttpServletResponse response) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
@@ -44,17 +45,17 @@ public class AuthorizeController {
         accessTokenDTO.setState(state);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubuser = githubProvider.getUser(accessToken);
-        System.out.println(githubuser.getName());
         if (githubuser != null) {
             //登录成功,写 cookie 和 session
             User user = new User();
-            user.setToken(UUID.randomUUID().toString());
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
             user.setName(githubuser.getName());
             user.setAccountId(String.valueOf(githubuser.getId()));
             user.setGmtCreater(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreater());
-            request.getSession().setAttribute("user", user);
             userMapper.insert(user);
+            response.addCookie(new Cookie("token",token));
             return "redirect:/";
         } else {
             //登录失败,重新登录
