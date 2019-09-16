@@ -9,7 +9,7 @@ import xin.coldshine.community.model.User;
 public interface UserMapper {
 
 
-    @Insert("insert into user(name,account_id,token,gmt_create,gmt_modified) values(#{name},#{accountId},#{token},#{gmtCreater},#{gmtModified})")
+    @Insert("insert into user(name,account_id,token,gmt_create,gmt_modified,avatar_url) values(#{name},#{accountId},#{token},#{gmtCreater},#{gmtModified},#{avatarUrl})")
     void insert(User user);
 
     @Select("select * from user where token=#{token}")
