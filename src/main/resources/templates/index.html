@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html  lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <title>蛋蛋社区</title>
@@ -50,22 +50,25 @@
         <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
             <h2><span class="glyphicon glyphicon-list" aria-hidden="true"></span>发现</h2>
             <hr>
-            <div class="media">
+            <div class="media" th:each="question : ${questions}">
                 <div class="media-left">
                     <a href="#">
-                        <img class="media-object img-rounded" src="https://avatars3.githubusercontent.com/u/54932709?v=4" alt="">
+                        <img class="media-object img-rounded"
+                             th:src="${question.user.avatarUrl}">
                     </a>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading">怎么快速学习 springboot</h4>
-                    来找蛋蛋社区吧<br>
-                    <span class="text-desc">2 个回复 • 31 次浏览 • 1 小时前</span>
+                    <h4 class="media-heading" th:text="${question.title}"></h4>
+                    <span th:text="${question.description}"></span><br>
+                    <span class="text-desc"><span th:text="${question.commentCount}"></span> 个回复 • <span
+                            th:text="${question.viewCount}"></span> 次浏览 • <span
+                            th:text="${#dates.format(question.getGmtCreate(),'dd MMMM yyyy')}"></span></span>
                 </div>
             </div>
         </div>
         <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
             <h3>热门文章</h3>
-            •  <br>
+            • <br>
             • <br>
             • <br>
         </div>
